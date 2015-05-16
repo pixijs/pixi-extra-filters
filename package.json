@@ -1,6 +1,6 @@
 {
   "name": "pixi-extra-filters",
-  "version": "1.0.3",
+  "version": "1.0.0",
   "description": "Spine implementation for pixi v3",
   "author": "Mat Groves",
   "contributors": [
@@ -28,7 +28,6 @@
     "outline"
   ],
   "scripts": {
-    "test": "gulp test",
     "build": "gulp build",
     "docs": "jsdoc -c ./gulp/util/jsdoc.conf.json"
   },

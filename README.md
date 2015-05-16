@@ -1,38 +1,28 @@
-# pixi-spine
+# pixi-extra-filters
 
-Spine implementation for pixi v3
+Some extra filters for pixi that aren't in the core plugin.
 
 ## Usage
 
 ### Browserify
 
-If you use browserify you can use pixi-spine like this:
+If you use browserify you can use pixi-extra-filters like this:
 
 ```js
 var PIXI = require('pixi.js'),
-    spine = require('pixi-spine');
+    extraFilters = require('pixi-extra-filters');
 
-PIXI.loader
-    .add('spineCharacter', 'spine-data-1/HERO.json');
-    .load(function (loader, resources) {
-        var animation = new spine.Spine(resources.spineCharacter.spineData);
-
-        // add the animation to the scene and render...
-    });
+var sprite = new PIXI.Sprite(someTexture);
+sprite.filters = [new extraFilters.GlowFilter(renderer.width, renderer.height, 15, 2, 1, 0xFF0000, 0.5)];
 ```
 
 ### Prebuilt Files
 
-If you are just including the built files, pixi spine adds itself to a pixi namespace:
+If you are just including the built files, pixi-extra-filters extends the `PIXI.filters` namespace with its filters:
 
 ```js
-PIXI.loader
-    .add('spineCharacter', 'spine-data-1/HERO.json');
-    .load(function (loader, resources) {
-        var animation = new PIXI.spine.Spine(resources.spineCharacter.spineData);
-
-        // add the animation to the scene and render...
-    });
+var sprite = new PIXI.Sprite(someTexture);
+sprite.filters = [new PIXI.filters.GlowFilter(renderer.width, renderer.height, 15, 2, 1, 0xFF0000, 0.5)];
 ```
 
 ## Building
