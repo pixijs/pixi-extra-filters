@@ -25,7 +25,8 @@
     "glsl",
     "shader",
     "glow",
-    "outline"
+    "outline",
+    "color replace"
   ],
   "scripts": {
     "build": "gulp build",

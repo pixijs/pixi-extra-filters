@@ -1,14 +1,197 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-module.exports = {
-    GlowFilter: require('./filters/glow/GlowFilter'),
-    OutlineFilter: require('./filters/outline/OutlineFilter')
+/**
+* @author Julien CLEREL @JuloxRox
+* original filter https://github.com/evanw/glfx.js/blob/master/src/filters/warp/bulgepinch.js by Evan Wallace : http://madebyevan.com/
+*/
+ 
+/**
+* @filter Bulge / Pinch
+* @description Bulges or pinches the image in a circle.
+* @param center The x and y coordinates of the center of the circle of effect.
+* @param radius The radius of the circle of effect.
+* @param strength -1 to 1 (-1 is strong pinch, 0 is no effect, 1 is strong bulge)
+*
+* @class BulgePinchFilter
+* @extends AbstractFilter
+* @constructor
+*/
+
+function BulgePinchFilter()
+{
+    PIXI.filters.AbstractFilter.call(this,
+        // vertex shader
+        null,
+        // fragment shader
+        [
+            'precision mediump float;',
+            'uniform float radius;',
+            'uniform float strength;',
+            'uniform vec2 center;',
+            'uniform sampler2D uSampler;',
+            'uniform vec4 dimensions;',
+            'varying vec2 vTextureCoord;',
+            
+            'void main()',
+            '{',
+                'vec2 coord = vTextureCoord * dimensions.xy;',
+                'coord -= center;',
+                'float distance = length(coord);',
+                'if (distance < radius) {',
+                    'float percent = distance / radius;',
+                    'if (strength > 0.0) {',
+                        'coord *= mix(1.0, smoothstep(0.0, radius /     distance, percent), strength * 0.75);',
+                    '} else {',
+                        'coord *= mix(1.0, pow(percent, 1.0 + strength * 0.75) * radius / distance, 1.0 - percent);',
+                    '}',
+                '}',
+                'coord += center;',
+                'gl_FragColor = texture2D(uSampler, coord / dimensions.xy);',
+                'vec2 clampedCoord = clamp(coord, vec2(0.0), dimensions.xy);',
+                'if (coord != clampedCoord) {',
+                    'gl_FragColor.a *= max(0.0, 1.0 - length(coord - clampedCoord));',
+                '}',
+            '}'
+        ].join('\n'),
+        // custom uniforms
+        {
+            dimensions: { type: '4f', value: [0,0,0,0] },
+            radius: { type: '1f', value: 100 },
+            strength: { type: '1f', value: 0.5 },
+            center: { type: 'v2', value: {x: 150, y: 150} }
+        }
+    );
 };
 
-for (var filter in module.exports) {
-    PIXI.filters[filter] = module.exports[filter];
-}
+BulgePinchFilter.prototype = Object.create(PIXI.filters.AbstractFilter.prototype);
+BulgePinchFilter.prototype.constructor = BulgePinchFilter;
 
-},{"./filters/glow/GlowFilter":2,"./filters/outline/OutlineFilter":3}],2:[function(require,module,exports){
+Object.defineProperties(BulgePinchFilter.prototype, {
+/**
+* The radius of the circle of effect.
+*
+* @property radius
+* @type Number
+*/
+    radius: {
+        get: function ()
+        {
+            return this.uniforms.radius.value;
+        },
+        set: function (value)
+        {
+            this.uniforms.radius.value = value;
+        }
+    },
+/**
+* The strength of the effect. -1 to 1 (-1 is strong pinch, 0 is no effect, 1 is strong bulge)
+*
+* @property strength
+* @type Number
+*/
+    strength: {
+        get: function ()
+        {
+            return this.uniforms.strength.value;
+        },
+        set: function (value)
+        {
+            this.uniforms.strength.value = value;
+        }
+    },
+/**
+* The x and y coordinates of the center of the circle of effect.
+*
+* @property center
+* @type Point
+*/
+    center: {
+        get: function ()
+        {
+            return this.uniforms.center.value;
+        },
+        set: function (value)
+        {
+            this.uniforms.center.value = value;
+        }
+    }
+});
+},{}],2:[function(require,module,exports){
+/**
+ * ColoreReplaceFilter, originally by mishaa, updated by timetocode
+ * http://www.html5gamedevs.com/topic/10640-outline-a-sprite-change-certain-colors/?p=69966
+ * 
+ * @class
+ * @param targetColor {FloatArray32} The color to find, as a 3 component RGB e.g. new Float32Array(1.0, 1.0, 1.0)
+ * @param replacementColor {FloatArray32} The color to find, as a 3 component RGB e.g. new Float32Array(1.0, 0.5, 1.0)
+ * @param epsilon {float} Tolerance/sensitivity of the floating-point comparison between colors (lower = more exact, higher = more inclusive)
+ * 
+ * @example
+ *  // replaces the RGB color 220, 220, 220 with the RGB color 225, 200, 215
+ *  someSprite.shader = new ColorReplaceFilter(
+ *   new Float32Array([220/255.0, 220/255.0, 220/255.0]), 
+ *   new Float32Array([225/255.0, 200/255.0, 215/255.0]),
+ *   0.001
+ * ); 
+ */
+var ColorReplaceFilter = function (targetColor, replacementColor, epsilon) {  
+  PIXI.AbstractFilter.call(this, 
+    // vertex shader
+    null,
+    // fragment shader
+    [
+      'precision mediump float;',
+      'varying vec2 vTextureCoord;',
+      'uniform sampler2D texture;',
+      'uniform vec3 targetColor;',
+      'uniform vec3 replacementColor;',
+      'uniform float epsilon;',
+      'void main(void) {',
+      '  vec4 currentColor = texture2D(texture, vTextureCoord);',
+      '  vec3 colorDiff = targetColor - (currentColor.rgb / max(currentColor.a, 0.0000000001));',
+      '  float colorDistance = length(colorDiff);',
+      '  float doReplace = step(colorDistance, epsilon);',
+      '  gl_FragColor = vec4(mix(currentColor.rgb, (replacementColor + colorDiff) * currentColor.a, doReplace), currentColor.a);',
+      '}'
+    ].join('\n'),
+    // custom unifroms
+    {
+      targetColor: { type: '3f', value: targetColor },
+      replacementColor: { type: '3f', value: replacementColor },
+      epsilon: { type: '1f', value: epsilon }
+    }
+  );
+};
+
+ColorReplaceFilter.prototype = Object.create(PIXI.AbstractFilter.prototype);
+ColorReplaceFilter.prototype.constructor = ColorReplaceFilter;
+
+Object.defineProperty(ColorReplaceFilter.prototype, 'targetColor', {
+  set: function (value) {
+    var r = ((value & 0xFF0000) >> 16) / 255,
+        g = ((value & 0x00FF00) >> 8) / 255,
+        b = (value & 0x0000FF) / 255;
+    this.uniforms.targetColor.value = { x: r, y: g, z: b };
+    this.dirty = true;
+  }
+});
+
+Object.defineProperty(ColorReplaceFilter.prototype, 'replacementColor', {
+  set: function (value) {
+    var r = ((value & 0xFF0000) >> 16) / 255,
+        g = ((value & 0x00FF00) >> 8) / 255,
+        b = (value & 0x0000FF) / 255;
+    this.uniforms.replacementColor.value = { x: r, y: g, z: b };
+    this.dirty = true;
+  }
+});
+
+Object.defineProperty(ColorReplaceFilter.prototype, 'epsilon', {
+  set: function (value) {
+    this.uniforms.epsilon.value = value;
+    this.dirty = true;
+  }
+});
+},{}],3:[function(require,module,exports){
 /**
  * GlowFilter, originally by mishaa
  * http://www.html5gamedevs.com/topic/12756-glow-filter/?hl=mishaa#entry73578
@@ -153,7 +336,7 @@ Object.defineProperties(GlowFilter.prototype, {
     }
 });
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /**
  * OutlineFilter, originally by mishaa
  * http://www.html5gamedevs.com/topic/10640-outline-a-sprite-change-certain-colors/?p=69966
@@ -245,7 +428,19 @@ Object.defineProperties(OutlineFilter.prototype, {
     }
 });
 
-},{}]},{},[1])
+},{}],5:[function(require,module,exports){
+module.exports = {
+    GlowFilter: require('./filters/glow/GlowFilter'),
+    OutlineFilter: require('./filters/outline/OutlineFilter'),
+    BulgePinchFilter: require('./filters/bulgepinch/bulgepinch'),
+    ColorReplaceFilter: require('./filters/colorreplace/ColorReplaceFilter')
+};
+
+for (var filter in module.exports) {
+    PIXI.filters[filter] = module.exports[filter];
+}
+
+},{"./filters/bulgepinch/bulgepinch":1,"./filters/colorreplace/ColorReplaceFilter":2,"./filters/glow/GlowFilter":3,"./filters/outline/OutlineFilter":4}]},{},[5])
 
 
 //# sourceMappingURL=pixi-extra-filters.js.map
