@@ -16,3 +16,4 @@ npm-debug.log
 # project ignores
 !.gitkeep
 node_modules
+bin
