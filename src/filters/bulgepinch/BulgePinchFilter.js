@@ -2,7 +2,7 @@
 * @author Julien CLEREL @JuloxRox
 * original filter https://github.com/evanw/glfx.js/blob/master/src/filters/warp/bulgepinch.js by Evan Wallace : http://madebyevan.com/
 */
- 
+
 /**
 * @filter Bulge / Pinch
 * @description Bulges or pinches the image in a circle.
@@ -15,8 +15,7 @@
 * @constructor
 */
 
-function BulgePinchFilter()
-{
+function BulgePinchFilter() {
     PIXI.filters.AbstractFilter.call(this,
         // vertex shader
         null,
@@ -29,7 +28,7 @@ function BulgePinchFilter()
             'uniform sampler2D uSampler;',
             'uniform vec4 dimensions;',
             'varying vec2 vTextureCoord;',
-            
+
             'void main()',
             '{',
                 'vec2 coord = vTextureCoord * dimensions.xy;',
@@ -63,14 +62,15 @@ function BulgePinchFilter()
 
 BulgePinchFilter.prototype = Object.create(PIXI.filters.AbstractFilter.prototype);
 BulgePinchFilter.prototype.constructor = BulgePinchFilter;
+module.exports = BulgePinchFilter;
 
 Object.defineProperties(BulgePinchFilter.prototype, {
-/**
-* The radius of the circle of effect.
-*
-* @property radius
-* @type Number
-*/
+    /**
+     * The radius of the circle of effect.
+     *
+     * @property radius
+     * @type Number
+     */
     radius: {
         get: function ()
         {
@@ -81,12 +81,12 @@ Object.defineProperties(BulgePinchFilter.prototype, {
             this.uniforms.radius.value = value;
         }
     },
-/**
-* The strength of the effect. -1 to 1 (-1 is strong pinch, 0 is no effect, 1 is strong bulge)
-*
-* @property strength
-* @type Number
-*/
+    /**
+     * The strength of the effect. -1 to 1 (-1 is strong pinch, 0 is no effect, 1 is strong bulge)
+     *
+     * @property strength
+     * @type Number
+     */
     strength: {
         get: function ()
         {
@@ -97,12 +97,12 @@ Object.defineProperties(BulgePinchFilter.prototype, {
             this.uniforms.strength.value = value;
         }
     },
-/**
-* The x and y coordinates of the center of the circle of effect.
-*
-* @property center
-* @type Point
-*/
+    /**
+     * The x and y coordinates of the center of the circle of effect.
+     *
+     * @property center
+     * @type Point
+     */
     center: {
         get: function ()
         {

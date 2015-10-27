@@ -2,13 +2,13 @@
  * OutlineFilter, originally by mishaa
  * http://www.html5gamedevs.com/topic/10640-outline-a-sprite-change-certain-colors/?p=69966
  * http://codepen.io/mishaa/pen/emGNRB
- * 
+ *
  * @class
  * @param viewWidth {number} The width of the view to draw to, usually renderer.width.
  * @param viewHeight {number} The height of the view to draw to, usually renderer.height.
  * @param thickness {number} The tickness of the outline.
  * @param color {number} The color of the glow.
- * 
+ *
  * @example
  *  someSprite.shader = new OutlineFilter(renderer.width, renderer.height, 9, 0xFF0000);
  */
@@ -69,7 +69,7 @@ Object.defineProperties(OutlineFilter.prototype, {
             PIXI.utils.hex2rgb(value, this.uniforms.outlineColor.value);
         }
     },
-    
+
     viewWidth: {
         get: function () {
             return 1 / this.uniforms.pixelWidth.value;
@@ -78,7 +78,7 @@ Object.defineProperties(OutlineFilter.prototype, {
             this.uniforms.pixelWidth.value = 1 / value;
         }
     },
-    
+
     viewHeight: {
         get: function () {
             return 1 / this.uniforms.pixelHeight.value;
