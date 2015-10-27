@@ -1,14 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-module.exports = {
-    GlowFilter: require('./filters/glow/GlowFilter'),
-    OutlineFilter: require('./filters/outline/OutlineFilter')
-};
-
-for (var filter in module.exports) {
-    PIXI.filters[filter] = module.exports[filter];
-}
-
-},{"./filters/glow/GlowFilter":2,"./filters/outline/OutlineFilter":3}],2:[function(require,module,exports){
 /**
  * GlowFilter, originally by mishaa
  * http://www.html5gamedevs.com/topic/12756-glow-filter/?hl=mishaa#entry73578
@@ -153,7 +143,7 @@ Object.defineProperties(GlowFilter.prototype, {
     }
 });
 
-},{}],3:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 /**
  * OutlineFilter, originally by mishaa
  * http://www.html5gamedevs.com/topic/10640-outline-a-sprite-change-certain-colors/?p=69966
@@ -245,7 +235,17 @@ Object.defineProperties(OutlineFilter.prototype, {
     }
 });
 
-},{}]},{},[1])
+},{}],3:[function(require,module,exports){
+module.exports = {
+    GlowFilter: require('./filters/glow/GlowFilter'),
+    OutlineFilter: require('./filters/outline/OutlineFilter')
+};
+
+for (var filter in module.exports) {
+    PIXI.filters[filter] = module.exports[filter];
+}
+
+},{"./filters/glow/GlowFilter":1,"./filters/outline/OutlineFilter":2}]},{},[3])
 
 
 //# sourceMappingURL=pixi-extra-filters.js.map
