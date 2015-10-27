@@ -1,6 +1,6 @@
 {
   "name": "pixi-extra-filters",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Extra pixi filters not included by default with the main library",
   "author": "Chad Engler <chad@pantherdev.com>",
   "contributors": [
@@ -32,12 +32,12 @@
     "docs": "jsdoc -c ./gulp/util/jsdoc.conf.json"
   },
   "files": [
-      "bin/",
-      "src/",
-      "CONTRIBUTING.md",
-      "LICENSE",
-      "package.json",
-      "README.md"
+    "bin/",
+    "src/",
+    "CONTRIBUTING.md",
+    "LICENSE",
+    "package.json",
+    "README.md"
   ],
   "peerDependencies": {
     "pixi.js": "^3.0.2"
