@@ -1,10 +1,10 @@
 {
   "name": "pixi-extra-filters",
   "version": "1.0.0",
-  "description": "Spine implementation for pixi v3",
-  "author": "Mat Groves",
+  "description": "Extra pixi filters not included by default with the main library",
+  "author": "Chad Engler <chad@pantherdev.com>",
   "contributors": [
-    "Chad Engler <chad@pantherdev.com>",
+    "Mat Groves",
     "Richard Davey <rdavey@gmail.com>"
   ],
   "main": "./src/index.js",
@@ -35,26 +35,26 @@
     "pixi.js": "^3.0.2"
   },
   "dependencies": {
-    "brfs": "^1.4.0"
+    "brfs": "^1.4.1"
   },
   "devDependencies": {
-    "browserify": "^10.2.0",
-    "del": "^1.1.0",
-    "gulp": "^3.8.10",
-    "gulp-cached": "^1.0.2",
-    "gulp-jshint": "^1.9.0",
+    "browserify": "^12.0.0",
+    "del": "^2.0.2",
+    "gulp": "^3.9.0",
+    "gulp-cached": "^1.1.0",
+    "gulp-jshint": "^1.11.2",
     "gulp-mirror": "^0.4.0",
-    "gulp-plumber": "^0.6.6",
-    "gulp-rename": "^1.2.0",
-    "gulp-sourcemaps": "^1.5.2",
-    "gulp-uglify": "^1.0.2",
-    "gulp-util": "^3.0.1",
+    "gulp-plumber": "^1.0.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^1.4.2",
+    "gulp-util": "^3.0.7",
     "jshint-summary": "^0.4.0",
-    "require-dir": "^0.1.0",
-    "run-sequence": "^1.0.2",
+    "require-dir": "^0.3.0",
+    "run-sequence": "^1.1.4",
     "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.0.0",
-    "watchify": "^2.2.1"
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.5.0"
   },
   "browserify": {
     "transform": [
