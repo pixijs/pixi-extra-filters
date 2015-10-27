@@ -31,6 +31,14 @@
     "build": "gulp build",
     "docs": "jsdoc -c ./gulp/util/jsdoc.conf.json"
   },
+  "files": [
+      "bin/",
+      "src/",
+      "CONTRIBUTING.md",
+      "LICENSE",
+      "package.json",
+      "README.md"
+  ],
   "peerDependencies": {
     "pixi.js": "^3.0.2"
   },
