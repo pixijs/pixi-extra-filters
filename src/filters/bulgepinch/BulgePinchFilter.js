@@ -16,7 +16,7 @@
 */
 
 function BulgePinchFilter() {
-    PIXI.filters.AbstractFilter.call(this,
+    PIXI.AbstractFilter.call(this,
         // vertex shader
         null,
         // fragment shader
@@ -60,7 +60,7 @@ function BulgePinchFilter() {
     );
 };
 
-BulgePinchFilter.prototype = Object.create(PIXI.filters.AbstractFilter.prototype);
+BulgePinchFilter.prototype = Object.create(PIXI.AbstractFilter.prototype);
 BulgePinchFilter.prototype.constructor = BulgePinchFilter;
 module.exports = BulgePinchFilter;
 
