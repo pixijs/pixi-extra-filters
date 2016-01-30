@@ -2,7 +2,7 @@
  * GlowFilter, originally by mishaa
  * http://www.html5gamedevs.com/topic/12756-glow-filter/?hl=mishaa#entry73578
  * http://codepen.io/mishaa/pen/raKzrm
- * 
+ *
  * @class
  * @param viewWidth {number} The width of the view to draw to, usually renderer.width.
  * @param viewHeight {number} The height of the view to draw to, usually renderer.height.
@@ -10,14 +10,14 @@
  * @param innerStrength {number} The strength of the glow inward from the edge of the sprite.
  * @param color {number} The color of the glow.
  * @param quality {number} A number between 0 and 1 that describes the quality of the glow.
- * 
+ *
  * @example
  *  someSprite.filters = [
  *      new GlowFilter(renderer.width, renderer.height, 15, 2, 1, 0xFF0000, 0.5)
  *  ];
  */
 function GlowFilter(viewWidth, viewHeight, distance, outerStrength, innerStrength, color, quality) {
-    PIXI.filters.AbstractFilter.call(this,
+    PIXI.AbstractFilter.call(this,
         // vertex shader
         null,
         // fragment shader
@@ -55,13 +55,13 @@ function GlowFilter(viewWidth, viewHeight, distance, outerStrength, innerStrengt
             '       }',
             '    }',
             '    maxTotalAlpha = max(maxTotalAlpha, 0.0001);',
-    
+
             '    ownColor.a = max(ownColor.a, 0.0001);',
             '    ownColor.rgb = ownColor.rgb / ownColor.a;',
             '    float outerGlowAlpha = (totalAlpha / maxTotalAlpha)  * outerStrength * (1. - ownColor.a);',
             '    float innerGlowAlpha = ((maxTotalAlpha - totalAlpha) / maxTotalAlpha) * innerStrength * ownColor.a;',
             '    float resultAlpha = (ownColor.a + outerGlowAlpha);',
-            
+
             '    gl_FragColor = vec4(mix(mix(ownColor.rgb, glowColor.rgb, innerGlowAlpha / ownColor.a), glowColor.rgb, outerGlowAlpha / resultAlpha) * resultAlpha, resultAlpha);',
             '}'
         ].join('\n'),
@@ -91,7 +91,7 @@ function GlowFilter(viewWidth, viewHeight, distance, outerStrength, innerStrengt
     this.viewHeight = viewHeight;
 };
 
-GlowFilter.prototype = Object.create(PIXI.filters.AbstractFilter.prototype);
+GlowFilter.prototype = Object.create(PIXI.AbstractFilter.prototype);
 GlowFilter.prototype.constructor = GlowFilter;
 module.exports = GlowFilter;
 

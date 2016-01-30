@@ -13,7 +13,7 @@
  *  someSprite.shader = new OutlineFilter(renderer.width, renderer.height, 9, 0xFF0000);
  */
 function OutlineFilter(viewWidth, viewHeight, thickness, color) {
-    PIXI.filters.AbstractFilter.call(this,
+    PIXI.AbstractFilter.call(this,
         // vertex shader
         null,
         // fragment shader
@@ -56,7 +56,7 @@ function OutlineFilter(viewWidth, viewHeight, thickness, color) {
     this.viewHeight = viewHeight;
 };
 
-OutlineFilter.prototype = Object.create(PIXI.filters.AbstractFilter.prototype);
+OutlineFilter.prototype = Object.create(PIXI.AbstractFilter.prototype);
 OutlineFilter.prototype.constructor = OutlineFilter;
 module.exports = OutlineFilter;
 
