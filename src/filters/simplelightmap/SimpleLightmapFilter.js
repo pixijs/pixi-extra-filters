@@ -18,69 +18,44 @@
 *  ];
 */
 function SimpleLightmapFilter(lightmapTexture, ambientColor, resolution) {
-    PIXI.AbstractFilter.call(
-        this,
-        null,
-        [
-            'precision mediump float;',
-            'varying vec4 vColor;',
-            'varying vec2 vTextureCoord;',
-            'uniform sampler2D u_texture; //diffuse map',
-            'uniform sampler2D u_lightmap;   //light map',
-            'uniform vec2 resolution; //resolution of screen',
-            'uniform vec4 ambientColor; //ambient RGB, alpha channel is intensity ',
-            'void main() {',
-            '    vec4 diffuseColor = texture2D(u_texture, vTextureCoord);',
-            '    vec2 lighCoord = (gl_FragCoord.xy / resolution.xy);',
-            '    vec4 light = texture2D(u_lightmap, vTextureCoord);',
-            '    vec3 ambient = ambientColor.rgb * ambientColor.a;',
-            '    vec3 intensity = ambient + light.rgb;',
-            '    vec3 finalColor = diffuseColor.rgb * intensity;',
-            '    gl_FragColor = vColor * vec4(finalColor, diffuseColor.a);',
-            '}'
-        ].join('\n'),
-        {
-            u_lightmap: {
-                type: 'sampler2D',
-                value: lightmapTexture
-            },
-            resolution: {
-                type: '2f',
-                value: new Float32Array(resolution || [1.0, 1.0])
-            },
-            ambientColor: {
-                type: '4f',
-                value: new Float32Array(ambientColor)
-            }
-        });
+    PIXI.Filter.call(this,
+        // vertex shader
+        // vertex shader
+        glslify('./simpleLightmap.vert'),
+        // fragment shader
+        glslify('./simpleLightmap.frag')
+    );
+    this.uniforms.u_lightmap = lightmapTexture;
+    this.uniforms.resolution = new Float32Array(resolution || [1.0, 1.0]);
+    this.uniforms.ambientColor =  new Float32Array(ambientColor);
 }
 
-SimpleLightmapFilter.prototype = Object.create(PIXI.AbstractFilter.prototype);
+SimpleLightmapFilter.prototype = Object.create(PIXI.Filter.prototype);
 SimpleLightmapFilter.prototype.constructor = SimpleLightmapFilter;
 
 Object.defineProperties(SimpleLightmapFilter.prototype, {
     texture: {
         get: function () {
-            return this.uniforms.u_lightmap.value;
+            return this.uniforms.u_lightmap;
         },
         set: function (value) {
-            this.uniforms.u_lightmap.value = value;
+            this.uniforms.u_lightmap = value;
         }
     },
     color: {
         get: function () {
-            return this.uniforms.ambientColor.value;
+            return this.uniforms.ambientColor;
         },
         set: function (value) {
-            this.uniforms.ambientColor.value = new Float32Array(value);
+            this.uniforms.ambientColor = new Float32Array(value);
         }
     },
     resolution: {
         get: function () {
-            return this.uniforms.resolution.value;
+            return this.uniforms.resolution;
         },
         set: function (value) {
-            this.uniforms.resolution.value = new Float32Array(value);
+            this.uniforms.resolution = new Float32Array(value);
         }
     }
 });

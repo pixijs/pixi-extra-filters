@@ -40,9 +40,10 @@
     "README.md"
   ],
   "peerDependencies": {
-    "pixi.js": "^3.0.2"
+    "pixi.js": "^4.0.0"
   },
   "dependencies": {
+    "glslify": "^5.0.2",
     "brfs": "^1.4.1"
   },
   "devDependencies": {
@@ -66,7 +67,8 @@
   },
   "browserify": {
     "transform": [
-      "brfs"
+      "brfs",
+      "glslify"
     ]
   }
 }

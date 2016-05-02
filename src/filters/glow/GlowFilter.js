@@ -17,64 +17,16 @@
  *  ];
  */
 function GlowFilter(viewWidth, viewHeight, distance, outerStrength, innerStrength, color, quality) {
-    PIXI.AbstractFilter.call(this,
+    PIXI.Filter.call(this,
         // vertex shader
-        null,
+        // vertex shader
+        glslify('./glow.vert'),
         // fragment shader
-        [
-            'precision mediump float;',
-
-            'varying vec2 vTextureCoord;',
-            'varying vec4 vColor;',
-
-            'uniform sampler2D uSampler;',
-
-            'uniform float distance;',
-            'uniform float outerStrength;',
-            'uniform float innerStrength;',
-            'uniform vec4 glowColor;',
-            'uniform float pixelWidth;',
-            'uniform float pixelHeight;',
-            'vec2 px = vec2(pixelWidth, pixelHeight);',
-
-            'void main(void) {',
-            '    const float PI = 3.14159265358979323846264;',
-            '    vec4 ownColor = texture2D(uSampler, vTextureCoord);',
-            '    vec4 curColor;',
-            '    float totalAlpha = 0.0;',
-            '    float maxTotalAlpha = 0.0;',
-            '    float cosAngle;',
-            '    float sinAngle;',
-            '    for (float angle = 0.0; angle <= PI * 2.0; angle += ' + (1 / quality / distance).toFixed(7) + ') {',
-            '       cosAngle = cos(angle);',
-            '       sinAngle = sin(angle);',
-            '       for (float curDistance = 1.0; curDistance <= ' + distance.toFixed(7) + '; curDistance++) {',
-            '           curColor = texture2D(uSampler, vec2(vTextureCoord.x + cosAngle * curDistance * px.x, vTextureCoord.y + sinAngle * curDistance * px.y));',
-            '           totalAlpha += (distance - curDistance) * curColor.a;',
-            '           maxTotalAlpha += (distance - curDistance);',
-            '       }',
-            '    }',
-            '    maxTotalAlpha = max(maxTotalAlpha, 0.0001);',
-
-            '    ownColor.a = max(ownColor.a, 0.0001);',
-            '    ownColor.rgb = ownColor.rgb / ownColor.a;',
-            '    float outerGlowAlpha = (totalAlpha / maxTotalAlpha)  * outerStrength * (1. - ownColor.a);',
-            '    float innerGlowAlpha = ((maxTotalAlpha - totalAlpha) / maxTotalAlpha) * innerStrength * ownColor.a;',
-            '    float resultAlpha = (ownColor.a + outerGlowAlpha);',
-
-            '    gl_FragColor = vec4(mix(mix(ownColor.rgb, glowColor.rgb, innerGlowAlpha / ownColor.a), glowColor.rgb, outerGlowAlpha / resultAlpha) * resultAlpha, resultAlpha);',
-            '}'
-        ].join('\n'),
-        // custom uniforms
-        {
-            distance: { type: '1f', value: distance },
-            outerStrength: { type: '1f', value: 0 },
-            innerStrength: { type: '1f', value: 0 },
-            glowColor: { type: '4f', value: new Float32Array([0, 0, 0, 1]) },
-            pixelWidth: { type: '1f', value: 0 },
-            pixelHeight: { type: '1f', value: 0 }
-        }
+        glslify('./glow.frag')
     );
+
+    this.uniforms.distance = distance;
+    this.uniforms.glowColor = new Float32Array([0, 0, 0, 1]);
 
     quality = Math.pow(quality, 1/3);
     this.quality = quality;
@@ -91,53 +43,53 @@ function GlowFilter(viewWidth, viewHeight, distance, outerStrength, innerStrengt
     this.viewHeight = viewHeight;
 };
 
-GlowFilter.prototype = Object.create(PIXI.AbstractFilter.prototype);
+GlowFilter.prototype = Object.create(PIXI.Filter.prototype);
 GlowFilter.prototype.constructor = GlowFilter;
 module.exports = GlowFilter;
 
 Object.defineProperties(GlowFilter.prototype, {
     color: {
         get: function () {
-            return PIXI.utils.rgb2hex(this.uniforms.glowColor.value);
+            return PIXI.utils.rgb2hex(this.uniforms.glowColor);
         },
         set: function(value) {
-            PIXI.utils.hex2rgb(value, this.uniforms.glowColor.value);
+            PIXI.utils.hex2rgb(value, this.uniforms.glowColor);
         }
     },
 
     outerStrength: {
         get: function () {
-            return this.uniforms.outerStrength.value;
+            return this.uniforms.outerStrength;
         },
         set: function (value) {
-            this.uniforms.outerStrength.value = value;
+            this.uniforms.outerStrength = value;
         }
     },
 
     innerStrength: {
         get: function () {
-            return this.uniforms.innerStrength.value;
+            return this.uniforms.innerStrength;
         },
         set: function (value) {
-            this.uniforms.innerStrength.value = value;
+            this.uniforms.innerStrength = value;
         }
     },
 
     viewWidth: {
         get: function () {
-            return 1 / this.uniforms.pixelWidth.value;
+            return 1 / this.uniforms.pixelWidth;
         },
         set: function(value) {
-            this.uniforms.pixelWidth.value = 1 / value;
+            this.uniforms.pixelWidth = 1 / value;
         }
     },
 
     viewHeight: {
         get: function () {
-            return 1 / this.uniforms.pixelHeight.value;
+            return 1 / this.uniforms.pixelHeight;
         },
         set: function(value) {
-            this.uniforms.pixelHeight.value = 1 / value;
+            this.uniforms.pixelHeight = 1 / value;
         }
     }
 });
