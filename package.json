@@ -67,7 +67,6 @@
   },
   "browserify": {
     "transform": [
-      "brfs",
       "glslify"
     ]
   }
