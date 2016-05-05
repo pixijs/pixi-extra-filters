@@ -1,5 +1,7 @@
+var glslify  = require('glslify');
+
 /**
- * ColoreReplaceFilter, originally by mishaa, updated by timetocode
+ * ColorReplaceFilter, originally by mishaa, updated by timetocode
  * http://www.html5gamedevs.com/topic/10640-outline-a-sprite-change-certain-colors/?p=69966
  *
  * @class
@@ -23,35 +25,20 @@
  *
  */
 function ColorReplaceFilter(originalColor, newColor, epsilon) {
-  PIXI.AbstractFilter.call(this,
-    // vertex shader
-    null,
-    // fragment shader
-    [
-      'precision mediump float;',
-      'varying vec2 vTextureCoord;',
-      'uniform sampler2D texture;',
-      'uniform vec3 originalColor;',
-      'uniform vec3 newColor;',
-      'uniform float epsilon;',
-      'void main(void) {',
-      '  vec4 currentColor = texture2D(texture, vTextureCoord);',
-      '  vec3 colorDiff = originalColor - (currentColor.rgb / max(currentColor.a, 0.0000000001));',
-      '  float colorDistance = length(colorDiff);',
-      '  float doReplace = step(colorDistance, epsilon);',
-      '  gl_FragColor = vec4(mix(currentColor.rgb, (newColor + colorDiff) * currentColor.a, doReplace), currentColor.a);',
-      '}'
-    ].join('\n'),
-    // custom unifroms
-    {
-      originalColor: { type: '3f', value: originalColor },
-      newColor: { type: '3f', value: newColor },
-      epsilon: { type: '1f', value: epsilon }
-    }
-  );
+    PIXI.Filter.call(this,
+        // vertex shader
+        // vertex shader
+        glslify('./colorReplace.vert'),
+        // fragment shader
+        glslify('./colorReplace.frag')
+    );
+
+    this.uniforms.originalColor = originalColor;
+    this.uniforms.newColor = newColor;
+    this.uniforms.epsilon = epsilon;
 };
 
-ColorReplaceFilter.prototype = Object.create(PIXI.AbstractFilter.prototype);
+ColorReplaceFilter.prototype = Object.create(PIXI.Filter.prototype);
 ColorReplaceFilter.prototype.constructor = ColorReplaceFilter;
 module.exports = ColorReplaceFilter;
 
@@ -60,8 +47,7 @@ Object.defineProperty(ColorReplaceFilter.prototype, 'originalColor', {
     var r = ((value & 0xFF0000) >> 16) / 255,
         g = ((value & 0x00FF00) >> 8) / 255,
         b = (value & 0x0000FF) / 255;
-    this.uniforms.originalColor.value = { x: r, y: g, z: b };
-    this.dirty = true;
+    this.uniforms.originalColor = { x: r, y: g, z: b };
   }
 });
 
@@ -70,14 +56,12 @@ Object.defineProperty(ColorReplaceFilter.prototype, 'newColor', {
     var r = ((value & 0xFF0000) >> 16) / 255,
         g = ((value & 0x00FF00) >> 8) / 255,
         b = (value & 0x0000FF) / 255;
-    this.uniforms.newColor.value = { x: r, y: g, z: b };
-    this.dirty = true;
+    this.uniforms.newColor = { x: r, y: g, z: b };
   }
 });
 
 Object.defineProperty(ColorReplaceFilter.prototype, 'epsilon', {
   set: function (value) {
-    this.uniforms.epsilon.value = value;
-    this.dirty = true;
+    this.uniforms.epsilon = value;
   }
 });

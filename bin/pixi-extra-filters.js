@@ -1,4 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+
+
 /**
 * @author Julien CLEREL @JuloxRox
 * original filter https://github.com/evanw/glfx.js/blob/master/src/filters/warp/bulgepinch.js by Evan Wallace : http://madebyevan.com/
@@ -17,51 +19,16 @@
 */
 
 function BulgePinchFilter() {
-    PIXI.AbstractFilter.call(this,
+    PIXI.Filter.call(this,
         // vertex shader
-        null,
-        // fragment shader
-        [
-            'precision mediump float;',
-            'uniform float radius;',
-            'uniform float strength;',
-            'uniform vec2 center;',
-            'uniform sampler2D uSampler;',
-            'uniform vec4 dimensions;',
-            'varying vec2 vTextureCoord;',
-
-            'void main()',
-            '{',
-                'vec2 coord = vTextureCoord * dimensions.xy;',
-                'coord -= center;',
-                'float distance = length(coord);',
-                'if (distance < radius) {',
-                    'float percent = distance / radius;',
-                    'if (strength > 0.0) {',
-                        'coord *= mix(1.0, smoothstep(0.0, radius /     distance, percent), strength * 0.75);',
-                    '} else {',
-                        'coord *= mix(1.0, pow(percent, 1.0 + strength * 0.75) * radius / distance, 1.0 - percent);',
-                    '}',
-                '}',
-                'coord += center;',
-                'gl_FragColor = texture2D(uSampler, coord / dimensions.xy);',
-                'vec2 clampedCoord = clamp(coord, vec2(0.0), dimensions.xy);',
-                'if (coord != clampedCoord) {',
-                    'gl_FragColor.a *= max(0.0, 1.0 - length(coord - clampedCoord));',
-                '}',
-            '}'
-        ].join('\n'),
-        // custom uniforms
-        {
-            dimensions: { type: '4f', value: [0,0,0,0] },
-            radius: { type: '1f', value: 100 },
-            strength: { type: '1f', value: 0.5 },
-            center: { type: 'v2', value: {x: 150, y: 150} }
-        }
+       // vertex shader
+        "#define GLSLIFY 1\nattribute vec2 aVertexPosition;\n\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void){\n\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n\n    vTextureCoord = aTextureCoord;\n\n}\n\n",
+            // fragment shader
+        "#define GLSLIFY 1\nuniform float radius;\nuniform float strength;\nuniform vec2 center;\nuniform sampler2D uSampler;\nuniform vec4 dimensions;\nvarying vec2 vTextureCoord;\nvoid main()\n{\n    vec2 coord = vTextureCoord * dimensions.xy;\n    coord -= center;\n    float distance = length(coord);\n    if (distance < radius) {\n        float percent = distance / radius;\n        if (strength > 0.0) {\n            coord *= mix(1.0, smoothstep(0.0, radius /     distance, percent), strength * 0.75);\n        } else {\n            coord *= mix(1.0, pow(percent, 1.0 + strength * 0.75) * radius / distance, 1.0 - percent);\n        }\n    }\n    coord += center;\n    gl_FragColor = texture2D(uSampler, coord / dimensions.xy);\n    vec2 clampedCoord = clamp(coord, vec2(0.0), dimensions.xy);\n    if (coord != clampedCoord) {\n    gl_FragColor.a *= max(0.0, 1.0 - length(coord - clampedCoord));\n    }\n}\n"
     );
-};
+}
 
-BulgePinchFilter.prototype = Object.create(PIXI.AbstractFilter.prototype);
+BulgePinchFilter.prototype = Object.create(PIXI.Filter.prototype);
 BulgePinchFilter.prototype.constructor = BulgePinchFilter;
 module.exports = BulgePinchFilter;
 
@@ -75,11 +42,11 @@ Object.defineProperties(BulgePinchFilter.prototype, {
     radius: {
         get: function ()
         {
-            return this.uniforms.radius.value;
+            return this.uniforms.radius;
         },
         set: function (value)
         {
-            this.uniforms.radius.value = value;
+            this.uniforms.radius = value;
         }
     },
     /**
@@ -91,11 +58,11 @@ Object.defineProperties(BulgePinchFilter.prototype, {
     strength: {
         get: function ()
         {
-            return this.uniforms.strength.value;
+            return this.uniforms.strength;
         },
         set: function (value)
         {
-            this.uniforms.strength.value = value;
+            this.uniforms.strength = value;
         }
     },
     /**
@@ -107,18 +74,20 @@ Object.defineProperties(BulgePinchFilter.prototype, {
     center: {
         get: function ()
         {
-            return this.uniforms.center.value;
+            return this.uniforms.center;
         },
         set: function (value)
         {
-            this.uniforms.center.value = value;
+            this.uniforms.center = value;
         }
     }
 });
 
 },{}],2:[function(require,module,exports){
+
+
 /**
- * ColoreReplaceFilter, originally by mishaa, updated by timetocode
+ * ColorReplaceFilter, originally by mishaa, updated by timetocode
  * http://www.html5gamedevs.com/topic/10640-outline-a-sprite-change-certain-colors/?p=69966
  *
  * @class
@@ -142,35 +111,20 @@ Object.defineProperties(BulgePinchFilter.prototype, {
  *
  */
 function ColorReplaceFilter(originalColor, newColor, epsilon) {
-  PIXI.AbstractFilter.call(this,
-    // vertex shader
-    null,
-    // fragment shader
-    [
-      'precision mediump float;',
-      'varying vec2 vTextureCoord;',
-      'uniform sampler2D texture;',
-      'uniform vec3 originalColor;',
-      'uniform vec3 newColor;',
-      'uniform float epsilon;',
-      'void main(void) {',
-      '  vec4 currentColor = texture2D(texture, vTextureCoord);',
-      '  vec3 colorDiff = originalColor - (currentColor.rgb / max(currentColor.a, 0.0000000001));',
-      '  float colorDistance = length(colorDiff);',
-      '  float doReplace = step(colorDistance, epsilon);',
-      '  gl_FragColor = vec4(mix(currentColor.rgb, (newColor + colorDiff) * currentColor.a, doReplace), currentColor.a);',
-      '}'
-    ].join('\n'),
-    // custom unifroms
-    {
-      originalColor: { type: '3f', value: originalColor },
-      newColor: { type: '3f', value: newColor },
-      epsilon: { type: '1f', value: epsilon }
-    }
-  );
+    PIXI.Filter.call(this,
+        // vertex shader
+        // vertex shader
+        "#define GLSLIFY 1\nattribute vec2 aVertexPosition;\n\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void){\n\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n\n    vTextureCoord = aTextureCoord;\n\n}\n\n",
+        // fragment shader
+        "#define GLSLIFY 1\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\nuniform vec3 originalColor;\nuniform vec3 newColor;\nuniform float epsilon;\nvoid main(void) {\n    vec4 currentColor = texture2D(texture, vTextureCoord);\n    vec3 colorDiff = originalColor - (currentColor.rgb / max(currentColor.a, 0.0000000001));\n    float colorDistance = length(colorDiff);\n    float doReplace = step(colorDistance, epsilon);\n    gl_FragColor = vec4(mix(currentColor.rgb, (newColor + colorDiff) * currentColor.a, doReplace), currentColor.a);\n}\n"
+    );
+
+    this.uniforms.originalColor = originalColor;
+    this.uniforms.newColor = newColor;
+    this.uniforms.epsilon = epsilon;
 };
 
-ColorReplaceFilter.prototype = Object.create(PIXI.AbstractFilter.prototype);
+ColorReplaceFilter.prototype = Object.create(PIXI.Filter.prototype);
 ColorReplaceFilter.prototype.constructor = ColorReplaceFilter;
 module.exports = ColorReplaceFilter;
 
@@ -179,8 +133,7 @@ Object.defineProperty(ColorReplaceFilter.prototype, 'originalColor', {
     var r = ((value & 0xFF0000) >> 16) / 255,
         g = ((value & 0x00FF00) >> 8) / 255,
         b = (value & 0x0000FF) / 255;
-    this.uniforms.originalColor.value = { x: r, y: g, z: b };
-    this.dirty = true;
+    this.uniforms.originalColor = { x: r, y: g, z: b };
   }
 });
 
@@ -189,17 +142,16 @@ Object.defineProperty(ColorReplaceFilter.prototype, 'newColor', {
     var r = ((value & 0xFF0000) >> 16) / 255,
         g = ((value & 0x00FF00) >> 8) / 255,
         b = (value & 0x0000FF) / 255;
-    this.uniforms.newColor.value = { x: r, y: g, z: b };
-    this.dirty = true;
+    this.uniforms.newColor = { x: r, y: g, z: b };
   }
 });
 
 Object.defineProperty(ColorReplaceFilter.prototype, 'epsilon', {
   set: function (value) {
-    this.uniforms.epsilon.value = value;
-    this.dirty = true;
+    this.uniforms.epsilon = value;
   }
 });
+
 },{}],3:[function(require,module,exports){
 /**
  * GlowFilter, originally by mishaa
@@ -220,64 +172,16 @@ Object.defineProperty(ColorReplaceFilter.prototype, 'epsilon', {
  *  ];
  */
 function GlowFilter(viewWidth, viewHeight, distance, outerStrength, innerStrength, color, quality) {
-    PIXI.AbstractFilter.call(this,
+    PIXI.Filter.call(this,
         // vertex shader
-        null,
+        // vertex shader
+        glslify('./glow.vert'),
         // fragment shader
-        [
-            'precision mediump float;',
-
-            'varying vec2 vTextureCoord;',
-            'varying vec4 vColor;',
-
-            'uniform sampler2D uSampler;',
-
-            'uniform float distance;',
-            'uniform float outerStrength;',
-            'uniform float innerStrength;',
-            'uniform vec4 glowColor;',
-            'uniform float pixelWidth;',
-            'uniform float pixelHeight;',
-            'vec2 px = vec2(pixelWidth, pixelHeight);',
-
-            'void main(void) {',
-            '    const float PI = 3.14159265358979323846264;',
-            '    vec4 ownColor = texture2D(uSampler, vTextureCoord);',
-            '    vec4 curColor;',
-            '    float totalAlpha = 0.0;',
-            '    float maxTotalAlpha = 0.0;',
-            '    float cosAngle;',
-            '    float sinAngle;',
-            '    for (float angle = 0.0; angle <= PI * 2.0; angle += ' + (1 / quality / distance).toFixed(7) + ') {',
-            '       cosAngle = cos(angle);',
-            '       sinAngle = sin(angle);',
-            '       for (float curDistance = 1.0; curDistance <= ' + distance.toFixed(7) + '; curDistance++) {',
-            '           curColor = texture2D(uSampler, vec2(vTextureCoord.x + cosAngle * curDistance * px.x, vTextureCoord.y + sinAngle * curDistance * px.y));',
-            '           totalAlpha += (distance - curDistance) * curColor.a;',
-            '           maxTotalAlpha += (distance - curDistance);',
-            '       }',
-            '    }',
-            '    maxTotalAlpha = max(maxTotalAlpha, 0.0001);',
-
-            '    ownColor.a = max(ownColor.a, 0.0001);',
-            '    ownColor.rgb = ownColor.rgb / ownColor.a;',
-            '    float outerGlowAlpha = (totalAlpha / maxTotalAlpha)  * outerStrength * (1. - ownColor.a);',
-            '    float innerGlowAlpha = ((maxTotalAlpha - totalAlpha) / maxTotalAlpha) * innerStrength * ownColor.a;',
-            '    float resultAlpha = (ownColor.a + outerGlowAlpha);',
-
-            '    gl_FragColor = vec4(mix(mix(ownColor.rgb, glowColor.rgb, innerGlowAlpha / ownColor.a), glowColor.rgb, outerGlowAlpha / resultAlpha) * resultAlpha, resultAlpha);',
-            '}'
-        ].join('\n'),
-        // custom uniforms
-        {
-            distance: { type: '1f', value: distance },
-            outerStrength: { type: '1f', value: 0 },
-            innerStrength: { type: '1f', value: 0 },
-            glowColor: { type: '4f', value: new Float32Array([0, 0, 0, 1]) },
-            pixelWidth: { type: '1f', value: 0 },
-            pixelHeight: { type: '1f', value: 0 }
-        }
+        glslify('./glow.frag')
     );
+
+    this.uniforms.distance = distance;
+    this.uniforms.glowColor = new Float32Array([0, 0, 0, 1]);
 
     quality = Math.pow(quality, 1/3);
     this.quality = quality;
@@ -294,58 +198,60 @@ function GlowFilter(viewWidth, viewHeight, distance, outerStrength, innerStrengt
     this.viewHeight = viewHeight;
 };
 
-GlowFilter.prototype = Object.create(PIXI.AbstractFilter.prototype);
+GlowFilter.prototype = Object.create(PIXI.Filter.prototype);
 GlowFilter.prototype.constructor = GlowFilter;
 module.exports = GlowFilter;
 
 Object.defineProperties(GlowFilter.prototype, {
     color: {
         get: function () {
-            return PIXI.utils.rgb2hex(this.uniforms.glowColor.value);
+            return PIXI.utils.rgb2hex(this.uniforms.glowColor);
         },
         set: function(value) {
-            PIXI.utils.hex2rgb(value, this.uniforms.glowColor.value);
+            PIXI.utils.hex2rgb(value, this.uniforms.glowColor);
         }
     },
 
     outerStrength: {
         get: function () {
-            return this.uniforms.outerStrength.value;
+            return this.uniforms.outerStrength;
         },
         set: function (value) {
-            this.uniforms.outerStrength.value = value;
+            this.uniforms.outerStrength = value;
         }
     },
 
     innerStrength: {
         get: function () {
-            return this.uniforms.innerStrength.value;
+            return this.uniforms.innerStrength;
         },
         set: function (value) {
-            this.uniforms.innerStrength.value = value;
+            this.uniforms.innerStrength = value;
         }
     },
 
     viewWidth: {
         get: function () {
-            return 1 / this.uniforms.pixelWidth.value;
+            return 1 / this.uniforms.pixelWidth;
         },
         set: function(value) {
-            this.uniforms.pixelWidth.value = 1 / value;
+            this.uniforms.pixelWidth = 1 / value;
         }
     },
 
     viewHeight: {
         get: function () {
-            return 1 / this.uniforms.pixelHeight.value;
+            return 1 / this.uniforms.pixelHeight;
         },
         set: function(value) {
-            this.uniforms.pixelHeight.value = 1 / value;
+            this.uniforms.pixelHeight = 1 / value;
         }
     }
 });
 
 },{}],4:[function(require,module,exports){
+
+
 /**
  * OutlineFilter, originally by mishaa
  * http://www.html5gamedevs.com/topic/10640-outline-a-sprite-change-certain-colors/?p=69966
@@ -361,78 +267,53 @@ Object.defineProperties(GlowFilter.prototype, {
  *  someSprite.shader = new OutlineFilter(renderer.width, renderer.height, 9, 0xFF0000);
  */
 function OutlineFilter(viewWidth, viewHeight, thickness, color) {
-    PIXI.AbstractFilter.call(this,
+    thickness = thickness || 1;
+    PIXI.Filter.call(this,
         // vertex shader
-        null,
+        // vertex shader
+        "#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\nvarying vec2 vTextureCoord;\n\nvoid main(void){\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}\n",
         // fragment shader
-        [
-            'precision mediump float;',
-
-            'varying vec2 vTextureCoord;',
-            'uniform sampler2D uSampler;',
-
-            'uniform float thickness;',
-            'uniform vec4 outlineColor;',
-            'uniform float pixelWidth;',
-            'uniform float pixelHeight;',
-            'vec2 px = vec2(pixelWidth, pixelHeight);',
-
-            'void main(void) {',
-            '    const float PI = 3.14159265358979323846264;',
-            '    vec4 ownColor = texture2D(uSampler, vTextureCoord);',
-            '    vec4 curColor;',
-            '    float maxAlpha = 0.;',
-            '    for (float angle = 0.; angle < PI * 2.; angle += ' + (1 / thickness).toFixed(7) + ') {',
-            '        curColor = texture2D(uSampler, vec2(vTextureCoord.x + thickness * px.x * cos(angle), vTextureCoord.y + thickness * px.y * sin(angle)));',
-            '        maxAlpha = max(maxAlpha, curColor.a);',
-            '    }',
-            '    float resultAlpha = max(maxAlpha, ownColor.a);',
-            '    gl_FragColor = vec4((ownColor.rgb + outlineColor.rgb * (1. - ownColor.a)) * resultAlpha, resultAlpha);',
-            '}'
-        ].join('\n'),
-        // custom uniforms
-        {
-            thickness: { type: '1f', value: thickness },
-            outlineColor: { type: '4f', value: new Float32Array([0, 0, 0, 1]) },
-            pixelWidth: { type: '1f', value: null },
-            pixelHeight: { type: '1f', value: null },
-        }
+        "#define GLSLIFY 1\nvarying vec2 vTextureCoord;\nuniform sampler2D uSampler;\n\nuniform float thickness;\nuniform vec4 outlineColor;\nuniform float pixelWidth;\nuniform float pixelHeight;\nvec2 px = vec2(pixelWidth, pixelHeight);\n\nvoid main(void) {\n    const float PI = 3.14159265358979323846264;\n    vec4 ownColor = texture2D(uSampler, vTextureCoord);\n    vec4 curColor;\n    float maxAlpha = 0.;\n    for (float angle = 0.; angle < PI * 2.; angle += %THICKNESS% ) {\n        curColor = texture2D(uSampler, vec2(vTextureCoord.x + thickness * px.x * cos(angle), vTextureCoord.y + thickness * px.y * sin(angle)));\n        maxAlpha = max(maxAlpha, curColor.a);\n    }\n    float resultAlpha = max(maxAlpha, ownColor.a);\n    gl_FragColor = vec4((ownColor.rgb + outlineColor.rgb * (1. - ownColor.a)) * resultAlpha, resultAlpha);\n}\n".replace(/%THICKNESS%/gi, (1.0 / thickness).toFixed(7))
     );
 
-    this.color = color;
-    this.viewWidth = viewWidth;
-    this.viewHeight = viewHeight;
+    this.uniforms.pixelWidth = 1 / (viewWidth || 1);
+    this.uniforms.pixelHeight = 1 / (viewHeight || 1);
+    this.uniforms.thickness = thickness;
+    this.uniforms.outlineColor = new Float32Array([0, 0, 0, 1]);
+    if (color) {
+        this.color = color;
+    }
 };
 
-OutlineFilter.prototype = Object.create(PIXI.AbstractFilter.prototype);
+OutlineFilter.prototype = Object.create(PIXI.Filter.prototype);
 OutlineFilter.prototype.constructor = OutlineFilter;
 module.exports = OutlineFilter;
 
 Object.defineProperties(OutlineFilter.prototype, {
     color: {
         get: function () {
-            return PIXI.utils.rgb2hex(this.uniforms.outlineColor.value);
+            return PIXI.utils.rgb2hex(this.uniforms.outlineColor);
         },
         set: function (value) {
-            PIXI.utils.hex2rgb(value, this.uniforms.outlineColor.value);
+            PIXI.utils.hex2rgb(value, this.uniforms.outlineColor);
         }
     },
 
     viewWidth: {
         get: function () {
-            return 1 / this.uniforms.pixelWidth.value;
+            return 1 / this.uniforms.pixelWidth;
         },
         set: function(value) {
-            this.uniforms.pixelWidth.value = 1 / value;
+            this.uniforms.pixelWidth = 1 / value;
         }
     },
 
     viewHeight: {
         get: function () {
-            return 1 / this.uniforms.pixelHeight.value;
+            return 1 / this.uniforms.pixelHeight;
         },
         set: function(value) {
-            this.uniforms.pixelHeight.value = 1 / value;
+            this.uniforms.pixelHeight = 1 / value;
         }
     }
 });
@@ -458,69 +339,44 @@ Object.defineProperties(OutlineFilter.prototype, {
 *  ];
 */
 function SimpleLightmapFilter(lightmapTexture, ambientColor, resolution) {
-    PIXI.AbstractFilter.call(
-        this,
-        null,
-        [
-            'precision mediump float;',
-            'varying vec4 vColor;',
-            'varying vec2 vTextureCoord;',
-            'uniform sampler2D u_texture; //diffuse map',
-            'uniform sampler2D u_lightmap;   //light map',
-            'uniform vec2 resolution; //resolution of screen',
-            'uniform vec4 ambientColor; //ambient RGB, alpha channel is intensity ',
-            'void main() {',
-            '    vec4 diffuseColor = texture2D(u_texture, vTextureCoord);',
-            '    vec2 lighCoord = (gl_FragCoord.xy / resolution.xy);',
-            '    vec4 light = texture2D(u_lightmap, vTextureCoord);',
-            '    vec3 ambient = ambientColor.rgb * ambientColor.a;',
-            '    vec3 intensity = ambient + light.rgb;',
-            '    vec3 finalColor = diffuseColor.rgb * intensity;',
-            '    gl_FragColor = vColor * vec4(finalColor, diffuseColor.a);',
-            '}'
-        ].join('\n'),
-        {
-            u_lightmap: {
-                type: 'sampler2D',
-                value: lightmapTexture
-            },
-            resolution: {
-                type: '2f',
-                value: new Float32Array(resolution || [1.0, 1.0])
-            },
-            ambientColor: {
-                type: '4f',
-                value: new Float32Array(ambientColor)
-            }
-        });
+    PIXI.Filter.call(this,
+        // vertex shader
+        // vertex shader
+        glslify('./simpleLightmap.vert'),
+        // fragment shader
+        glslify('./simpleLightmap.frag')
+    );
+    this.uniforms.u_lightmap = lightmapTexture;
+    this.uniforms.resolution = new Float32Array(resolution || [1.0, 1.0]);
+    this.uniforms.ambientColor =  new Float32Array(ambientColor);
 }
 
-SimpleLightmapFilter.prototype = Object.create(PIXI.AbstractFilter.prototype);
+SimpleLightmapFilter.prototype = Object.create(PIXI.Filter.prototype);
 SimpleLightmapFilter.prototype.constructor = SimpleLightmapFilter;
 
 Object.defineProperties(SimpleLightmapFilter.prototype, {
     texture: {
         get: function () {
-            return this.uniforms.u_lightmap.value;
+            return this.uniforms.u_lightmap;
         },
         set: function (value) {
-            this.uniforms.u_lightmap.value = value;
+            this.uniforms.u_lightmap = value;
         }
     },
     color: {
         get: function () {
-            return this.uniforms.ambientColor.value;
+            return this.uniforms.ambientColor;
         },
         set: function (value) {
-            this.uniforms.ambientColor.value = new Float32Array(value);
+            this.uniforms.ambientColor = new Float32Array(value);
         }
     },
     resolution: {
         get: function () {
-            return this.uniforms.resolution.value;
+            return this.uniforms.resolution;
         },
         set: function (value) {
-            this.uniforms.resolution.value = new Float32Array(value);
+            this.uniforms.resolution = new Float32Array(value);
         }
     }
 });
