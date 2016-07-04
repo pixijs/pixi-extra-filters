@@ -1,3 +1,5 @@
+var glslify  = require('glslify');
+
 /**
 * SimpleLightmap, originally by Oza94
 * http://www.html5gamedevs.com/topic/20027-pixijs-simple-lightmapping/

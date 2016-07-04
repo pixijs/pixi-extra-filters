@@ -1,3 +1,5 @@
+var glslify  = require('glslify');
+
 /**
  * GlowFilter, originally by mishaa
  * http://www.html5gamedevs.com/topic/12756-glow-filter/?hl=mishaa#entry73578
