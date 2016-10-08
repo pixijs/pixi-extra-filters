@@ -3,9 +3,8 @@ uniform sampler2D uSampler;
 
 uniform float thickness;
 uniform vec4 outlineColor;
-uniform float pixelWidth;
-uniform float pixelHeight;
-vec2 px = vec2(pixelWidth, pixelHeight);
+uniform vec4 filterArea;
+vec2 px = vec2(1.0 / filterArea.x, 1.0 / filterArea.y);
 
 void main(void) {
     const float PI = 3.14159265358979323846264;

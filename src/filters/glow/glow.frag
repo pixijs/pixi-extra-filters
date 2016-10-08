@@ -7,9 +7,8 @@ uniform float distance;
 uniform float outerStrength;
 uniform float innerStrength;
 uniform vec4 glowColor;
-uniform float pixelWidth;
-uniform float pixelHeight;
-vec2 px = vec2(pixelWidth, pixelHeight);
+uniform vec4 filterArea;
+vec2 px = vec2(1.0 / filterArea.x, 1.0 / filterArea.y);
 
 void main(void) {
     const float PI = 3.14159265358979323846264;
@@ -19,10 +18,10 @@ void main(void) {
     float maxTotalAlpha = 0.0;
     float cosAngle;
     float sinAngle;
-    for (float angle = 0.0; angle <= PI * 2.0; angle += ' + (1 / quality / distance).toFixed(7) + ') {
+    for (float angle = 0.0; angle <= PI * 2.0; angle += %QUALITY_DIST%) {
        cosAngle = cos(angle);
        sinAngle = sin(angle);
-       for (float curDistance = 1.0; curDistance <= ' + distance.toFixed(7) + '; curDistance++) {
+       for (float curDistance = 1.0; curDistance <= %DIST%; curDistance++) {
            curColor = texture2D(uSampler, vec2(vTextureCoord.x + cosAngle * curDistance * px.x, vTextureCoord.y + sinAngle * curDistance * px.y));
            totalAlpha += (distance - curDistance) * curColor.a;
            maxTotalAlpha += (distance - curDistance);
