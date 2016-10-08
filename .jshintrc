@@ -12,7 +12,7 @@
     // with different skill levels.
 
     "bitwise"       : false,    // Disallow bitwise operators (&, |, ^, etc.).
-    "camelcase"     : true,     // Force all variable names to use either camelCase or UPPER_CASE.
+    "camelcase"     : false,     // Force all variable names to use either camelCase or UPPER_CASE.
     "curly"         : true,     // Require {} for every new block or scope.
     "eqeqeq"        : true,     // Require triple equals i.e. `===`.
     "es3"           : false,    // Enforce conforming to ECMAScript 3.
@@ -34,7 +34,7 @@
     "maxdepth"      : 6,        // Prohibit nested blocks from going more than X levels deep.
     "maxstatements" : false,    // Restrict the number of statements in a function.
     "maxcomplexity" : false,    // Restrict the cyclomatic complexity of the code.
-    "maxlen"        : 125,      // Require that all lines are n characters or less.
+    "maxlen"        : 200,      // Require that all lines are n characters or less.
     "globals"       : {         // Register globals that are used in the code.
         "PIXI": false
     },

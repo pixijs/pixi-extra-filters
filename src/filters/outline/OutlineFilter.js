@@ -31,7 +31,7 @@ function OutlineFilter(viewWidth, viewHeight, thickness, color) {
     if (color) {
         this.color = color;
     }
-};
+}
 
 OutlineFilter.prototype = Object.create(PIXI.Filter.prototype);
 OutlineFilter.prototype.constructor = OutlineFilter;
