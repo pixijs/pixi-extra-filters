@@ -43,7 +43,7 @@ function GlowFilter(viewWidth, viewHeight, distance, outerStrength, innerStrengt
     this.innerStrength = innerStrength;
     this.viewWidth = viewWidth;
     this.viewHeight = viewHeight;
-};
+}
 
 GlowFilter.prototype = Object.create(PIXI.Filter.prototype);
 GlowFilter.prototype.constructor = GlowFilter;

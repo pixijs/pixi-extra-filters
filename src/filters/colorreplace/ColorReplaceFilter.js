@@ -36,7 +36,7 @@ function ColorReplaceFilter(originalColor, newColor, epsilon) {
     this.uniforms.originalColor = originalColor;
     this.uniforms.newColor = newColor;
     this.uniforms.epsilon = epsilon;
-};
+}
 
 ColorReplaceFilter.prototype = Object.create(PIXI.Filter.prototype);
 ColorReplaceFilter.prototype.constructor = ColorReplaceFilter;
