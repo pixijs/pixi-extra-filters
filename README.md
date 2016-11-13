@@ -13,7 +13,7 @@ var PIXI = require('pixi.js'),
     extraFilters = require('pixi-extra-filters');
 
 var sprite = new PIXI.Sprite(someTexture);
-sprite.filters = [new extraFilters.GlowFilter(renderer.width, renderer.height, 15, 2, 1, 0xFF0000, 0.5)];
+sprite.filters = [new extraFilters.GlowFilter(15, 2, 1, 0xFF0000, 0.5)];
 ```
 
 ### Prebuilt Files
@@ -22,7 +22,7 @@ If you are just including the built files, pixi-extra-filters extends the `PIXI.
 
 ```js
 var sprite = new PIXI.Sprite(someTexture);
-sprite.filters = [new PIXI.filters.GlowFilter(renderer.width, renderer.height, 15, 2, 1, 0xFF0000, 0.5)];
+sprite.filters = [new PIXI.filters.GlowFilter(15, 2, 1, 0xFF0000, 0.5)];
 ```
 
 ## Building
