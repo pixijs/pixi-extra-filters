@@ -62,5 +62,14 @@ Object.defineProperties(GlowFilter.prototype, {
         set: function (value) {
             this.uniforms.outerStrength = value;
         }
+    },
+
+    innerStrength: {
+        get: function () {
+            return this.uniforms.innerStrength;
+        },
+        set: function (value) {
+            this.uniforms.innerStrength = value;
+        }
     }
 });

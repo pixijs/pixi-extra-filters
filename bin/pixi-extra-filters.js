@@ -1,6 +1,6 @@
 /*!
- * pixi-extra-filters - v1.1.1
- * Compiled Sat Oct 08 2016 20:50:10 GMT+0300 (RTZ 2 (зима))
+ * pixi-extra-filters - v1.1.2
+ * Compiled Wed, 26 Apr 2017 17:16:41 UTC
  *
  * pixi-extra-filters is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -176,7 +176,7 @@ Object.defineProperty(ColorReplaceFilter.prototype, 'epsilon', {
  *
  * @example
  *  someSprite.filters = [
- *      new GlowFilter(renderer.width, renderer.height, 15, 2, 1, 0xFF0000, 0.5)
+ *      new GlowFilter(15, 2, 1, 0xFF0000, 0.5)
  *  ];
  */
 function GlowFilter(distance, outerStrength, innerStrength, color, quality) {
@@ -224,6 +224,15 @@ Object.defineProperties(GlowFilter.prototype, {
         set: function (value) {
             this.uniforms.outerStrength = value;
         }
+    },
+
+    innerStrength: {
+        get: function () {
+            return this.uniforms.innerStrength;
+        },
+        set: function (value) {
+            this.uniforms.innerStrength = value;
+        }
     }
 });
 
@@ -240,7 +249,7 @@ Object.defineProperties(GlowFilter.prototype, {
  * @param color {number} The color of the glow.
  *
  * @example
- *  someSprite.shader = new OutlineFilter(renderer.width, renderer.height, 9, 0xFF0000);
+ *  someSprite.shader = new OutlineFilter(9, 0xFF0000);
  */
 function OutlineFilter(thickness, color) {
     thickness = thickness || 1;
