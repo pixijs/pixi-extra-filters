@@ -8,6 +8,7 @@ uniform float outerStrength;
 uniform float innerStrength;
 uniform vec4 glowColor;
 uniform vec4 filterArea;
+uniform vec4 filterClamp;
 vec2 px = vec2(1.0 / filterArea.x, 1.0 / filterArea.y);
 
 void main(void) {
@@ -18,11 +19,14 @@ void main(void) {
     float maxTotalAlpha = 0.0;
     float cosAngle;
     float sinAngle;
+    vec2 displaced;
     for (float angle = 0.0; angle <= PI * 2.0; angle += %QUALITY_DIST%) {
        cosAngle = cos(angle);
        sinAngle = sin(angle);
        for (float curDistance = 1.0; curDistance <= %DIST%; curDistance++) {
-           curColor = texture2D(uSampler, vec2(vTextureCoord.x + cosAngle * curDistance * px.x, vTextureCoord.y + sinAngle * curDistance * px.y));
+           displaced.x = vTextureCoord.x + cosAngle * curDistance * px.x;
+           displaced.y = vTextureCoord.y + sinAngle * curDistance * px.y;
+           curColor = texture2D(uSampler, clamp(displaced, filterClamp.xy, filterClamp.zw));
            totalAlpha += (distance - curDistance) * curColor.a;
            maxTotalAlpha += (distance - curDistance);
        }
