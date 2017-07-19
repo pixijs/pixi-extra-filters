@@ -1,3 +1,5 @@
+> IMPORTANT: This project is no longer maintained. All community filters have been combined with the core [**pixi-filters**](https://github.com/pixijs/pixi-filters) and are not longer maintained here. Pull requests should be made to **pixi-filters**.
+
 # pixi-extra-filters
 
 Some extra filters for pixi that aren't in the core plugin.
